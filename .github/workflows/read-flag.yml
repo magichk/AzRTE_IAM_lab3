@@ -1,0 +1,34 @@
+name: Magichk: Read Flag from Azure Blob
+
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  workflow_dispatch:
+
+jobs:
+  read-flag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: fdd066e1-ee37-49bc-b08f-d0e152119b04
+          subscription-id: 00d0113a-93b3-4920-bf6d-8323661899f3
+
+      - name: Install Azure CLI Storage Extension
+        run: az extension add --name storage-preview
+
+      - name: Read blob from storage account
+        run: |
+          az storage blob download \
+            --account-name iamazurelab345cfbfc1 \
+            --container-name flag \
+            --name flag.txt \
+            --file flag.txt \
+            --auth-mode login
+          echo "===== FLAG ====="
+          cat flag.txt
+
